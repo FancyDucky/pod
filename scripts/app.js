@@ -201,7 +201,7 @@
 
     const idToWord = new Map(words.map(w => [w.id, w]));
     let lastFlashId = null;
-    let quizState = { currentId: null, correctIndex: null };
+    let quizState = { currentId: null, correctIndex: null, options: [], dir: 'cebuano' };
     let flashLock = false;
     let quizLocked = false;
 
@@ -276,17 +276,18 @@
       quizState.currentId = current.id;
       const dir = getCardDirection(current);
       const promptText = dir === 'cebuano' ? current.cebuano : current.english;
-      const correctText = dir === 'cebuano' ? current.english : current.cebuano;
-      const distractors = sampleUnique(words, 3, current.id).map(w => dir === 'cebuano' ? w.english : w.cebuano);
-      const options = [correctText, ...distractors];
-      shuffleInPlace(options);
-      const correctIndex = options.indexOf(correctText);
+      const candidates = [current, ...sampleUnique(words, 3, current.id)];
+      let optionItems = candidates.map(w => ({ word: w, display: dir === 'cebuano' ? w.english : w.cebuano }));
+      shuffleInPlace(optionItems);
+      const correctIndex = optionItems.findIndex(x => x.word.id === current.id);
       quizState.correctIndex = correctIndex;
+      quizState.options = optionItems;
+      quizState.dir = dir;
 
       el.quizPrompt.textContent = promptText;
       el.quizFeedback.textContent = '';
       el.quizOptions.forEach((btn, i) => {
-        btn.textContent = options[i];
+        btn.textContent = optionItems[i] ? optionItems[i].display : '';
         btn.classList.remove('correct', 'incorrect');
         btn.disabled = false;
       });
@@ -314,6 +315,15 @@
         if (i === quizState.correctIndex) btn.classList.add('correct');
         else if (i === index && !correct) btn.classList.add('incorrect');
       });
+      // After answering in English → Cebuano direction, show both languages on options
+      if (quizState.dir === 'english') {
+        el.quizOptions.forEach((btn, i) => {
+          const item = quizState.options[i];
+          if (item && item.word) {
+            btn.textContent = `${item.word.cebuano} — ${item.word.english}`;
+          }
+        });
+      }
       el.quizNext.disabled = false;
     }
 
