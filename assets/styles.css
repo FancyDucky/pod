@@ -1,0 +1,88 @@
+:root{
+  --bg: #0b1020;
+  --panel: #121833;
+  --muted: #99a3b3;
+  --text: #e9edf5;
+  --primary: #6aa3ff;
+  --primary-2: #2f6fff;
+  --success: #29c16a;
+  --danger: #ff5d5d;
+  --accent: #f7c948;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 800px at 10% 0%, #101739 0%, var(--bg) 55%);
+  color: var(--text);
+}
+.app-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; background:transparent; position:sticky; top:0; z-index:5;
+}
+.brand{display:flex; align-items:center; gap:12px}
+.brand .logo{font-size:22px}
+.brand h1{font-size:18px; margin:0; font-weight:700}
+.mode-switch{display:flex; gap:8px}
+.mode-btn{
+  padding:8px 12px; border-radius:10px; border:1px solid #2a335c; background:#11173a; color:var(--text);
+  cursor:pointer; transition:all .15s ease; font-weight:600;
+}
+.mode-btn[aria-pressed="true"], .mode-btn:hover{border-color:var(--primary); color:#fff}
+.app-main{max-width:1100px; margin:0 auto; padding:10px 16px 40px}
+.controls{display:flex; flex-wrap:wrap; gap:16px; align-items:center; padding:8px 10px}
+.control-group{display:flex; gap:10px; align-items:center}
+.control-group.small{color:var(--muted)}
+select{
+  background:#0f1636; border:1px solid #2a335c; color:var(--text); padding:8px 10px; border-radius:8px;
+}
+.secondary{
+  background:#0d1431; border:1px solid #2a335c; color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer;
+}
+.primary{background:linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%); color:#08102b; border:none; padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:700}
+.success{background:linear-gradient(180deg,#50e3a4 0%, var(--success) 100%); color:#042519; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700}
+.danger{background:linear-gradient(180deg,#ff8a8a 0%, var(--danger) 100%); color:#2d0404; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700}
+.spacer{flex:1}
+.view{display:none}
+.view.visible{display:block}
+
+.card{
+  width:min(780px, 95%);
+  height:320px;
+  margin:24px auto;
+  perspective:1000px;
+}
+.card .card-front, .card .card-back{
+  position:relative; width:100%; height:100%; border-radius:16px; border:1px solid #2a335c;
+  background:linear-gradient(180deg, #131b3d 0%, #0f1636 100%);
+  display:flex; align-items:center; justify-content:center; padding:24px; text-align:center;
+  font-size:28px; font-weight:700;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  transform-style:preserve-3d;
+}
+.card .card-back{position:absolute; top:0; left:0; transform:rotateY(180deg)}
+.card.flipped .card-front{transform:rotateY(180deg)}
+.card.flipped .card-back{transform:rotateY(360deg)}
+.card-actions{display:flex; gap:10px; align-items:center; justify-content:center}
+.progress-row{margin-top:10px; color:var(--muted); text-align:center}
+
+.quiz-card{width:min(780px,95%); margin:24px auto; border:1px solid #2a335c; border-radius:16px; background:#0f1636; padding:18px}
+.quiz-prompt{font-size:22px; font-weight:700; margin-bottom:14px}
+.quiz-options{display:grid; grid-template-columns:1fr; gap:10px}
+.quiz-option{padding:12px; border-radius:12px; background:#101947; color:var(--text); border:1px solid #2a335c; text-align:left; cursor:pointer; font-weight:600}
+.quiz-option.correct{border-color:#2adb86; background:#0f2d25}
+.quiz-option.incorrect{border-color:#ff8a8a; background:#2a0f14}
+.quiz-actions{display:flex; align-items:center; gap:10px; margin-top:12px}
+
+.stats-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; width:min(780px,95%); margin:24px auto}
+.stat{border:1px solid #2a335c; border-radius:14px; background:#0f1636; padding:14px}
+.stat .label{color:var(--muted); font-size:14px}
+.stat .value{font-size:22px; font-weight:700; margin-top:6px}
+
+.app-footer{color:#6f7a90; text-align:center; padding:20px}
+
+@media(min-width:720px){
+  .quiz-options{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(5,1fr)}
+}
