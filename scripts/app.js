@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = 'cebuano-learner-progress-v1';
   const SETTINGS_KEY = 'cebuano-learner-settings-v1';
+  const STREAK_KEY = 'cebuano-learner-streak-v1';
 
   /**
    * Minimal fallback dataset used if fetching data/cebuano.json fails.
@@ -73,6 +74,33 @@
     } catch (_) {
       // ignore
     }
+  }
+
+  function readStreak() {
+    return readLocalStorage(STREAK_KEY, { lastActiveDay: null, streakCount: 0 });
+  }
+
+  function writeStreak(streak) {
+    writeLocalStorage(STREAK_KEY, streak);
+  }
+
+  function getDayString(ts) {
+    return new Date(ts).toISOString().slice(0, 10);
+  }
+
+  function recordDailyActivity() {
+    const now = nowTs();
+    const today = getDayString(now);
+    const streak = readStreak();
+    if (streak.lastActiveDay === today) {
+      return streak.streakCount || 0;
+    }
+    const yesterday = getDayString(now - 24 * 3600e3);
+    const isConsecutive = streak.lastActiveDay === yesterday;
+    const nextCount = isConsecutive ? (streak.streakCount || 0) + 1 : 1;
+    const updated = { lastActiveDay: today, streakCount: nextCount };
+    writeStreak(updated);
+    return nextCount;
   }
 
   function shuffleInPlace(array) {
@@ -174,6 +202,8 @@
     const idToWord = new Map(words.map(w => [w.id, w]));
     let lastFlashId = null;
     let quizState = { currentId: null, correctIndex: null };
+    let flashLock = false;
+    let quizLocked = false;
 
     if (settings.orientation) el.orientation.value = settings.orientation;
 
@@ -214,10 +244,8 @@
       el.statMastered.textContent = String(mastered);
       el.statSeen.textContent = String(totalSeen);
       el.statAccuracy.textContent = `${computeAccuracy(totalCorrect, totalIncorrect)}%`;
-      // Streak: simplistic daily streak placeholder using lastSeen recency across any word
-      const latest = Math.max(0, ...Object.values(progressById).map(p => p.lastSeen || 0));
-      const days = latest ? Math.max(1, Math.floor((nowTs() - latest) / (24 * 3600e3)) === 0 ? 1 : 0) : 0;
-      el.statStreak.textContent = String(days);
+      const streak = readStreak();
+      el.statStreak.textContent = String(streak.streakCount || 0);
     }
 
     function renderFlashcard() {
@@ -239,6 +267,7 @@
       if (delta > 0) p.correct = (p.correct || 0) + 1; else p.incorrect = (p.incorrect || 0) + 1;
       p.lastSeen = nowTs();
       saveProgress();
+      recordDailyActivity();
     }
 
     function renderQuiz() {
@@ -262,11 +291,14 @@
         btn.disabled = false;
       });
       el.quizNext.disabled = true;
+      quizLocked = false;
       const p = progressById[current.id] || { score: 0, seen: 0 };
       el.quizProgress.textContent = `Score: ${p.score || 0} · Seen: ${p.seen || 0}`;
     }
 
     function answerQuiz(index) {
+      if (quizLocked) return;
+      quizLocked = true;
       const current = idToWord.get(quizState.currentId);
       if (!current) return;
       const correct = index === quizState.correctIndex;
@@ -302,17 +334,35 @@
     // Flashcard events
     el.btnFlip.addEventListener('click', () => { el.card.classList.toggle('flipped'); });
     el.card.addEventListener('click', () => { el.card.classList.toggle('flipped'); });
-    el.btnAgain.addEventListener('click', () => { if (lastFlashId) { adjustScore(lastFlashId, -1); renderFlashcard(); } });
-    el.btnGood.addEventListener('click', () => { if (lastFlashId) { adjustScore(lastFlashId, +1); renderFlashcard(); } });
-    el.btnEasy.addEventListener('click', () => { if (lastFlashId) { adjustScore(lastFlashId, +2); renderFlashcard(); } });
+    el.btnAgain.addEventListener('click', () => {
+      if (flashLock || !lastFlashId) return;
+      flashLock = true;
+      adjustScore(lastFlashId, -1);
+      renderFlashcard();
+      flashLock = false;
+    });
+    el.btnGood.addEventListener('click', () => {
+      if (flashLock || !lastFlashId) return;
+      flashLock = true;
+      adjustScore(lastFlashId, +1);
+      renderFlashcard();
+      flashLock = false;
+    });
+    el.btnEasy.addEventListener('click', () => {
+      if (flashLock || !lastFlashId) return;
+      flashLock = true;
+      adjustScore(lastFlashId, +2);
+      renderFlashcard();
+      flashLock = false;
+    });
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (settings.mode === 'flashcards') {
         if (e.code === 'Space') { e.preventDefault(); el.card.classList.toggle('flipped'); }
-        if (e.key === '1') { if (lastFlashId) { adjustScore(lastFlashId, -1); renderFlashcard(); } }
-        if (e.key === '2') { if (lastFlashId) { adjustScore(lastFlashId, +1); renderFlashcard(); } }
-        if (e.key === '3') { if (lastFlashId) { adjustScore(lastFlashId, +2); renderFlashcard(); } }
+        if (e.key === '1') { if (!flashLock && lastFlashId) { flashLock = true; adjustScore(lastFlashId, -1); renderFlashcard(); flashLock = false; } }
+        if (e.key === '2') { if (!flashLock && lastFlashId) { flashLock = true; adjustScore(lastFlashId, +1); renderFlashcard(); flashLock = false; } }
+        if (e.key === '3') { if (!flashLock && lastFlashId) { flashLock = true; adjustScore(lastFlashId, +2); renderFlashcard(); flashLock = false; } }
       }
     });
 
