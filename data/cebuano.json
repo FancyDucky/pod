@@ -81,4 +81,34 @@
   { "id": "place-church", "cebuano": "Simbahan", "english": "Church" },
   { "id": "place-market", "cebuano": "Merkado", "english": "Market" },
   { "id": "place-hospital", "cebuano": "Ospital", "english": "Hospital" }
+  ,
+  { "id": "num-zero", "cebuano": "Sero", "english": "Zero", "category": "numbers" },
+  { "id": "num-twenty", "cebuano": "Baynte", "english": "Twenty", "category": "numbers" },
+
+  { "id": "color-orange", "cebuano": "Kahel", "english": "Orange", "category": "colors" },
+  { "id": "color-purple", "cebuano": "Ube", "english": "Purple", "category": "colors" },
+  { "id": "color-pink", "cebuano": "Rosas", "english": "Pink", "category": "colors" },
+  { "id": "color-brown", "cebuano": "Brown", "english": "Brown", "category": "colors" },
+  { "id": "color-gray", "cebuano": "Abo", "english": "Gray", "category": "colors" },
+
+  { "id": "place-restaurant", "cebuano": "Restawran", "english": "Restaurant", "category": "locations" },
+  { "id": "place-hotel", "cebuano": "Hotel", "english": "Hotel", "category": "locations" },
+  { "id": "place-bank", "cebuano": "Bangko", "english": "Bank", "category": "locations" },
+  { "id": "place-beach", "cebuano": "Baybayon", "english": "Beach", "category": "locations" },
+  { "id": "place-mountain", "cebuano": "Bukid", "english": "Mountain", "category": "locations" },
+  { "id": "place-city", "cebuano": "Syudad", "english": "City", "category": "locations" },
+  { "id": "place-street", "cebuano": "Dalan", "english": "Street", "category": "locations" },
+  { "id": "place-restroom", "cebuano": "Kasilyas", "english": "Restroom / Toilet", "category": "locations" },
+  { "id": "place-store", "cebuano": "Tindahan", "english": "Store", "category": "locations" },
+  { "id": "place-pharmacy", "cebuano": "Botika", "english": "Pharmacy", "category": "locations" },
+
+  { "id": "common-where-from", "cebuano": "Taga asa ka?", "english": "Where are you from?", "category": "common" },
+  { "id": "common-how-old", "cebuano": "Pilay edad nimo?", "english": "How old are you?", "category": "common" },
+  { "id": "common-speak-english", "cebuano": "Kabalo ka mag-Iningles?", "english": "Do you speak English?", "category": "common" },
+  { "id": "common-what-time", "cebuano": "Unsa na oras?", "english": "What time is it?", "category": "common" },
+  { "id": "common-can-you-help", "cebuano": "Pwede ko nimo tabangan?", "english": "Can you help me?", "category": "common" },
+  { "id": "common-where-bathroom", "cebuano": "Asa ang kasilyas?", "english": "Where is the bathroom?", "category": "common" },
+  { "id": "common-what-mean", "cebuano": "Unsa'y pasabot ani?", "english": "What does this mean?", "category": "common" },
+  { "id": "common-how-say", "cebuano": "Unsaon pag-ingon niini sa Cebuano?", "english": "How do you say this in Cebuano?", "category": "common" },
+  { "id": "common-where-live", "cebuano": "Asa ka nagpuyo?", "english": "Where do you live?", "category": "common" }
 ]

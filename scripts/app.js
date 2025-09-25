@@ -40,10 +40,19 @@
     { id: 'num-three', cebuano: 'Tulo', english: 'Three' },
     { id: 'num-four', cebuano: 'Upat', english: 'Four' },
     { id: 'num-five', cebuano: 'Lima', english: 'Five' },
+    { id: 'num-six', cebuano: 'Unom', english: 'Six' },
+    { id: 'num-seven', cebuano: 'Pito', english: 'Seven' },
+    { id: 'num-eight', cebuano: 'Walo', english: 'Eight' },
+    { id: 'num-nine', cebuano: 'Siyam', english: 'Nine' },
+    { id: 'num-ten', cebuano: 'Napulo', english: 'Ten' },
     { id: 'color-red', cebuano: 'Pula', english: 'Red' },
     { id: 'color-blue', cebuano: 'Asul', english: 'Blue' },
     { id: 'color-green', cebuano: 'Berde / lunhaw', english: 'Green' },
     { id: 'color-yellow', cebuano: 'Dilaw', english: 'Yellow' },
+    { id: 'color-black', cebuano: 'Itom', english: 'Black' },
+    { id: 'color-white', cebuano: 'Puti', english: 'White' },
+    { id: 'color-orange', cebuano: 'Kahel', english: 'Orange' },
+    { id: 'color-purple', cebuano: 'Ube', english: 'Purple' },
     { id: 'emotion-hungry', cebuano: 'Gigutom', english: 'Hungry' },
     { id: 'emotion-thirsty', cebuano: 'Gi-uhaw', english: 'Thirsty' },
     { id: 'emotion-tired', cebuano: 'Kapoy', english: 'Tired' },
@@ -54,9 +63,15 @@
     { id: 'common-i-dont-know', cebuano: 'Wala ko kahibalo', english: "I don't know" },
     { id: 'common-i-understand', cebuano: 'Nakasabot ko', english: 'I understand' },
     { id: 'common-help', cebuano: 'Tabang!', english: 'Help!' },
+    { id: 'common-where-from', cebuano: 'Taga asa ka?', english: 'Where are you from?' },
+    { id: 'common-how-old', cebuano: 'Pilay edad nimo?', english: 'How old are you?' },
+    { id: 'common-what-time', cebuano: 'Unsa na oras?', english: 'What time is it?' },
     { id: 'place-house', cebuano: 'Balay', english: 'House' },
     { id: 'place-school', cebuano: 'Eskwelahan', english: 'School' },
-    { id: 'place-market', cebuano: 'Merkado', english: 'Market' }
+    { id: 'place-market', cebuano: 'Merkado', english: 'Market' },
+    { id: 'place-bank', cebuano: 'Bangko', english: 'Bank' },
+    { id: 'place-beach', cebuano: 'Baybayon', english: 'Beach' },
+    { id: 'place-restroom', cebuano: 'Kasilyas', english: 'Restroom / Toilet' }
   ];
 
   function readLocalStorage(key, fallback) {
@@ -186,6 +201,7 @@
       quizFeedback: document.getElementById('quiz-feedback'),
       quizNext: document.getElementById('quiz-next'),
       quizProgress: document.getElementById('quiz-progress'),
+      quizStreak: document.getElementById('quiz-streak'),
       // Stats
       statTotal: document.getElementById('stat-total'),
       statMastered: document.getElementById('stat-mastered'),
@@ -295,6 +311,11 @@
       quizLocked = false;
       const p = progressById[current.id] || { score: 0, seen: 0 };
       el.quizProgress.textContent = `Score: ${p.score || 0} · Seen: ${p.seen || 0}`;
+      // Show current streak without mutating it here
+      const streak = readStreak();
+      if (el.quizStreak) {
+        el.quizStreak.textContent = `Streak: ${streak.streakCount || 0}`;
+      }
     }
 
     function answerQuiz(index) {
@@ -325,6 +346,11 @@
         });
       }
       el.quizNext.disabled = false;
+      // Update streak display after recording activity
+      const streak = readStreak();
+      if (el.quizStreak) {
+        el.quizStreak.textContent = `Streak: ${streak.streakCount || 0}`;
+      }
     }
 
     // Events
