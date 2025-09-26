@@ -2,6 +2,7 @@
   const STORAGE_KEY = 'cebuano-learner-progress-v1';
   const SETTINGS_KEY = 'cebuano-learner-settings-v1';
   const STREAK_KEY = 'cebuano-learner-streak-v1';
+  const QUIZ_STREAK_KEY = 'cebuano-learner-quiz-streak-v1';
 
   /**
    * Minimal fallback dataset used if fetching data/cebuano.json fails.
@@ -97,6 +98,14 @@
 
   function writeStreak(streak) {
     writeLocalStorage(STREAK_KEY, streak);
+  }
+
+  function readQuizStreak() {
+    return readLocalStorage(QUIZ_STREAK_KEY, { current: 0 });
+  }
+
+  function writeQuizStreak(streak) {
+    writeLocalStorage(QUIZ_STREAK_KEY, streak);
   }
 
   function getDayString(ts) {
@@ -260,8 +269,8 @@
       el.statMastered.textContent = String(mastered);
       el.statSeen.textContent = String(totalSeen);
       el.statAccuracy.textContent = `${computeAccuracy(totalCorrect, totalIncorrect)}%`;
-      const streak = readStreak();
-      el.statStreak.textContent = String(streak.streakCount || 0);
+      const quizStreak = readQuizStreak();
+      el.statStreak.textContent = String(quizStreak.current || 0);
     }
 
     function renderFlashcard() {
@@ -312,9 +321,9 @@
       const p = progressById[current.id] || { score: 0, seen: 0 };
       el.quizProgress.textContent = `Score: ${p.score || 0} · Seen: ${p.seen || 0}`;
       // Show current streak without mutating it here
-      const streak = readStreak();
+      const quizStreak = readQuizStreak();
       if (el.quizStreak) {
-        el.quizStreak.textContent = `Streak: ${streak.streakCount || 0}`;
+        el.quizStreak.textContent = `Streak: ${quizStreak.current || 0}`;
       }
     }
 
@@ -324,6 +333,10 @@
       const current = idToWord.get(quizState.currentId);
       if (!current) return;
       const correct = index === quizState.correctIndex;
+      // Update quiz streak: increment on correct, reset on incorrect
+      const existingQuizStreak = readQuizStreak();
+      const nextQuizStreak = { current: correct ? (existingQuizStreak.current || 0) + 1 : 0 };
+      writeQuizStreak(nextQuizStreak);
       if (correct) {
         adjustScore(current.id, +1);
         el.quizFeedback.textContent = 'Correct!';
@@ -347,9 +360,9 @@
       }
       el.quizNext.disabled = false;
       // Update streak display after recording activity
-      const streak = readStreak();
+      const streak = readQuizStreak();
       if (el.quizStreak) {
-        el.quizStreak.textContent = `Streak: ${streak.streakCount || 0}`;
+        el.quizStreak.textContent = `Streak: ${streak.current || 0}`;
       }
     }
 
